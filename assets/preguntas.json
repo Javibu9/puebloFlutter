@@ -1,0 +1,183 @@
+[
+
+  {
+    "preguntaEs": "¿De cuántos tramos se compone la torre mudéjar?",
+    "preguntaEn": "How many sections have the almudejar tower?",
+    "respuesta1Es": "1",
+    "respuesta2Es": "5",
+    "respuesta3Es": "20",
+    "respuesta1En": "1",
+    "respuesta2En": "5",
+    "respuesta3En": "20",
+    "acierto": "b"
+  },
+
+  {
+    "preguntaEs": "¿Cómo se llama la comarca dónde está ubicada la Laguna de El Oso?",
+    "preguntaEn": "which is the name of this region?",
+    "respuesta1Es": "La Moraña",
+    "respuesta2Es": "La Estepa",
+    "respuesta3Es": "nula",
+    "respuesta1En": "La Moraña",
+    "respuesta2En": "La Estepa",
+    "respuesta3En": "nula",
+    "acierto": "a"
+  },
+
+  {
+    "preguntaEs": "¿Con que planta se hacían tejidos para ropa?",
+    "preguntaEn": "what plant was used to make fabrics?",
+    "respuesta1Es": "Lino",
+    "respuesta2Es": "Chopo",
+    "respuesta3Es": "Ciruelo",
+    "respuesta1En": "Linen",
+    "respuesta2En": "Poplar",
+    "respuesta3En": "Plum tree",
+    "acierto": "a"
+  },
+
+  {
+    "preguntaEs": "¿Cuántos años hace que vive en la tierra la especie Triops cancriformis?",
+    "preguntaEn": "How long have Triops cancriformis lived in this region?",
+    "respuesta1Es": "1000 años",
+    "respuesta2Es": "1000000 años",
+    "respuesta3Es": "200000000 años",
+    "respuesta1En": "1000 years",
+    "respuesta2En": "1000000 years",
+    "respuesta3En": "200000000 years",
+    "acierto": "c"
+  },
+
+  {
+    "preguntaEs": "¿Cuál de estas aves crían en la Laguna de El Oso?",
+    "preguntaEn": "which of these birds breed in Laguna de El Oso?",
+    "respuesta1Es": "La espatula",
+    "respuesta2Es": "La grulla",
+    "respuesta3Es": "La cigüeña",
+    "respuesta1En": "Spoonbill",
+    "respuesta2En": "Crane",
+    "respuesta3En": "Stork",
+    "acierto": "c"
+  },
+
+  {
+    "preguntaEs": "¿Para qué sirven los hide?",
+    "preguntaEn": "What serve the hide for?",
+    "respuesta1Es": "Como escondite para hacer fotos y observar fauna.",
+    "respuesta2Es": "Como refugio para comer.",
+    "respuesta3Es": "Lugar de lectura.",
+    "respuesta1En": "A place to watch birds.",
+    "respuesta2En": "A refuge to eat",
+    "respuesta3En": "A reading place",
+    "acierto": "a"
+  },
+
+  {
+    "preguntaEs": "¿Cuál de estos constituye un instrumento básico de los ornitólogos para avistar aves?",
+    "preguntaEn": "Which tool does an ornithologist use for birdwatching?",
+    "respuesta1Es": "Prismaticos",
+    "respuesta2Es": "Escopeta",
+    "respuesta3Es": "Navaja",
+    "respuesta1En": "Binoculars",
+    "respuesta2En": "Shotgun",
+    "respuesta3En": "Knive",
+    "acierto": "a"
+  },
+
+  {
+    "preguntaEs": "¿Cuál de las siguientes afirmaciones es verdad sobre el Triops cancriformis?",
+    "preguntaEn": "Which sentence about Triops cancriformis is true?",
+    "respuesta1Es": "No son crustaceos",
+    "respuesta2Es": "Tienen un solo ojo",
+    "respuesta3Es": "Son fosiles vivientes",
+    "respuesta1En": "It is not a crustacean",
+    "respuesta2En": "They only have one eye",
+    "respuesta3En": "They are alive fossil",
+    "acierto": "c"
+  },
+
+  {
+    "preguntaEs": "¿Qué tipo de aves son los ánsares?",
+    "preguntaEn": "What kind of bird is a goose?",
+    "respuesta1Es": "Sedentarias",
+    "respuesta2Es": "Migratorias",
+    "respuesta3Es": "nula",
+    "respuesta1En": "Sedentary",
+    "respuesta2En": "Migratory",
+    "respuesta3En": "nula",
+    "acierto": "b"
+  },
+
+  {
+    "preguntaEs": "¿Cuál es el ave más pesada que puede volar?",
+    "preguntaEn": "What is the heaviest flying bird?",
+    "respuesta1Es": "La golondrina",
+    "respuesta2Es": "La avutarda",
+    "respuesta3Es": "La grulla",
+    "respuesta1En": "Swallow",
+    "respuesta2En": "Bustard",
+    "respuesta3En": "Crane",
+    "acierto": "b"
+  },
+
+  {
+    "preguntaEs": "¿Cómo se puede diferenciar un águila joven de un águila adulta?",
+    "preguntaEn": "How can you distinguish between a young eagle and an old one?",
+    "respuesta1Es": "Por el color",
+    "respuesta2Es": "Por la forma de volar",
+    "respuesta3Es": "Por la alimentación",
+    "respuesta1En": "For the color",
+    "respuesta2En": "For the way of talking",
+    "respuesta3En": "For the feeding",
+    "acierto": "a"
+  },
+
+  {
+    "preguntaEs": "¿Cuál es la especie de pato más pequeño de España?",
+    "preguntaEn": "Which is the smallest duck in Spain?",
+    "respuesta1Es": "La cerceta común",
+    "respuesta2Es": "El ánade friso",
+    "respuesta3Es": "El ánade azulón",
+    "respuesta1En": "Eurasian teal anas",
+    "respuesta2En": "Brown duck",
+    "respuesta3En": "Blue duck",
+    "acierto": "a"
+  },
+
+  {
+    "preguntaEs": "¿Cuántos topillos pueden comer una familia de lechuzas en la temporada de cría?",
+    "preguntaEn": "How many moles can be eaten by a family of owl in the breeding season?",
+    "respuesta1Es": "Entre 100 y 200",
+    "respuesta2Es": "Entre 500 y 1000",
+    "respuesta3Es": "Mas de 10000",
+    "respuesta1En": "Between 100 & 200",
+    "respuesta2En": "Between 500 & 1000",
+    "respuesta3En": "More than 10000",
+    "acierto": "b"
+  },
+
+  {
+    "preguntaEs": "¿Cuántos kilómetros recorre en su migración la mariposa de los cardos?",
+    "preguntaEn": "How many kilometers does the cactus butterfly travel on its migration?",
+    "respuesta1Es": "5 km",
+    "respuesta2Es": "0 km",
+    "respuesta3Es": "5000 km",
+    "respuesta1En": "5 km",
+    "respuesta2En": "0 km",
+    "respuesta3En": "5000 km",
+    "acierto": "c"
+  },
+
+  {
+    "preguntaEs": "¿Cuál de estos pueblos y ciudades se ven desde la torre?",
+    "preguntaEn": "Which villages and towns can you see from the tower?",
+    "respuesta1Es": "Riocabado",
+    "respuesta2Es": "Arevalo",
+    "respuesta3Es": "Segovia",
+    "respuesta1En": "Riocabado",
+    "respuesta2En": "Arevalo",
+    "respuesta3En": "Segovia",
+    "acierto": "a"
+  }
+
+]
