@@ -27,6 +27,7 @@ dependencies:
   qrscan: ^0.2.17
   shared_preferences: ^0.5.6
   toast: ^0.1.5
+  audioplayers: ^0.17.0
   #media_player: ^0.0.7
 
   # The following adds the Cupertino Icons font to your application.
@@ -55,6 +56,59 @@ flutter:
      - images/splashfoto.jpg
      - images/qr.png
      - images/marcador.png
+
+     - raw/locu_01.mp3
+     - raw/locu_01_in.mp3
+     - raw/locu_02.mp3
+     - raw/locu_02_in.mp3
+     - raw/locu_03.mp3
+     - raw/locu_03_in.mp3
+     - raw/locu_04.mp3
+     - raw/locu_04_in.mp3
+     - raw/locu_05.mp3
+     - raw/locu_05_in.mp3
+     - raw/locu_06.mp3
+     - raw/locu_06_in.mp3
+     - raw/locu_07.mp3
+     - raw/locu_07_in.mp3
+     - raw/locu_08.mp3
+     - raw/locu_08_in.mp3
+     - raw/locu_09.mp3
+     - raw/locu_09_in.mp3
+     - raw/locu_10.mp3
+     - raw/locu_10_in.mp3
+     - raw/locu_11.mp3
+     - raw/locu_11_in.mp3
+     - raw/locu_12.mp3
+     - raw/locu_12_in.mp3
+     - raw/locu_13.mp3
+     - raw/locu_13_in.mp3
+     - raw/locu_14.mp3
+     - raw/locu_14_in.mp3
+     - raw/locu_15.mp3
+     - raw/locu_15_in.mp3
+     - raw/locu_16.mp3
+     - raw/locu_16_in.mp3
+     - raw/locu_17.mp3
+     - raw/locu_17_in.mp3
+     - raw/locu_18.mp3
+     - raw/locu_18_in.mp3
+     - raw/locu_19.mp3
+     - raw/locu_19_in.mp3
+     - raw/locu_20.mp3
+     - raw/locu_20_in.mp3
+     - raw/locu_21.mp3
+     - raw/locu_21_in.mp3
+     - raw/locu_22.mp3
+     - raw/locu_22_in.mp3
+     - raw/locu_23.mp3
+     - raw/locu_23_in.mp3
+     - raw/locu_24.mp3
+     - raw/locu_24_in.mp3
+     - raw/locu_25.mp3
+     - raw/locu_25_in.mp3
+     - raw/locu_26.mp3
+     - raw/locu_26_in.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

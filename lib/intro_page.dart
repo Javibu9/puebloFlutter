@@ -8,6 +8,10 @@ import 'file:///C:/Users/javie/Documents/Flutter/proyectoPueblo/proyecto_pueblo/
     as globals;
 import 'package:proyecto_pueblo/inicio_ruta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audio_cache.dart';
+
+
 
 class IntroPage extends StatefulWidget {
   @override

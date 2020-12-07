@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:proyecto_pueblo/Util/global/globals.dart' as globals;
@@ -29,8 +31,7 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
   String _counter, _value = "";
   int cantQR = 0;
   int posiQR = 0;
-  int posiQRtxt = 0;
-  Codigo nextCodigo = null;
+  int codigoEscaneado;
   List codigos = new List();
 
   String tipoRuta;
@@ -39,37 +40,79 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
   String tituloEn;
   String i;
 
+  bool mostrarSiguiente = false;
   bool mostrarInfo = false;
+
+  Duration _duration = Duration();
+  Duration _position = Duration();
+  AudioPlayer advancedPlayer;
+  AudioCache audioCache;
+  String localFilePath;
+  bool boolPlaying = false;
+  bool poderParar = false;
+
+  bool finRuta = false;
 
   Future _scannerQR() async {
     SharedPreferences editor = await SharedPreferences.getInstance();
     _counter = await scanner.scan();
     print("Es esto " + _counter);
     String codigo = _counter.substring(3, 5);
-    posiQRtxt += 1;
+    codigoEscaneado = int.parse(codigo);
 
-    if ((posiQRtxt) != int.parse(codigo)) {
-      Toast.show('Escanea los codigos en orden', context,
-          duration: Toast.LENGTH_SHORT);
-      posiQRtxt -= 1;
-    } else {
-      setState(() {
-        if (tipoRuta == "libre") {
-          posiQR = int.parse(codigo) - 14;
-          posiQRtxt = int.parse(codigo);
-          i = posiQR.toString();
-          editor.setString("NumeroQR", i);
-          print(editor.getString("NumeroQR"));
-        } else if (tipoRuta == "completa") {
-          posiQRtxt = int.parse(codigo);
-          posiQR = int.parse(codigo);
-          i = posiQR.toString();
-          editor.setString("NumeroQR", i);
-          print(editor.getString("NumeroQR"));
-        }
-        mostrarInfo = true;
-      });
+    if (editor.getString("Tipo") == "libre") {
+      if ((posiQR) != codigoEscaneado-15) {
+        Toast.show('Escanea los codigos en orden', context,
+            duration: Toast.LENGTH_SHORT);
+      } else {
+        setState(() {
+          if (posiQR == 26) {
+            finRuta = true;
+          }
+          mostrarSiguiente = true;
+          mostrarInfo = true;
+
+          mostrarDialog();
+        });
+      }
+    } else if (editor.getString("Tipo") == "completa") {
+      if ((posiQR) != codigoEscaneado) {
+        Toast.show('Escanea los codigos en orden', context,
+            duration: Toast.LENGTH_SHORT);
+      } else {
+        setState(() {
+          if (posiQR == 26) {
+            finRuta = true;
+          }
+          mostrarSiguiente = true;
+          mostrarInfo = true;
+
+          mostrarDialog();
+        });
+      }
     }
+
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initPlayer();
+  }
+
+  void initPlayer() {
+    advancedPlayer = AudioPlayer();
+    audioCache = AudioCache(fixedPlayer: advancedPlayer, prefix: 'raw/');
+
+    advancedPlayer.onDurationChanged.listen((Duration d) {
+      setState(() {
+        _duration = d;
+      });
+    });
+    advancedPlayer.durationHandler = (p) => setState(() {
+          _duration = p;
+        });
   }
 
   /*Future<String> loadAsset() async {
@@ -121,14 +164,14 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
                   if (snapshot.hasData) {
                     codigos = json.decode(snapshot.data.toString());
                     if (Global.tipo == "comleta") {
-                      return scan_info(posiQRtxt);
+                      return scan_info(posiQR);
                     } else if (Global.tipo == "libre") {
-                      return scan_info(posiQRtxt + 1);
+                      return scan_info(posiQR + 15);
                     } else {
                       if (tipoRuta == "completa") {
-                        return scan_info(posiQRtxt);
+                        return scan_info(posiQR);
                       } else if (tipoRuta == "libre") {
-                        return scan_info(posiQRtxt + 1);
+                        return scan_info(posiQR + 15);
                         print("El tipo ruta es " + tipoRuta);
                       } else {}
                     }
@@ -147,12 +190,32 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
     );
   }
 
+  void obtenerPreferencias() async {
+    SharedPreferences editor = await SharedPreferences.getInstance();
+
+    i = editor.getString("NumeroQR") ?? "No hay dato";
+    print(editor.getString("NumeroQR"));
+    if (int.parse(i) == 0) {
+      posiQR = 1;
+    } else {
+      posiQR = int.parse(i);
+    }
+
+    if (editor.getString("Tipo") == "libre") {
+      cantQR = 11;
+    } else if (editor.getString("Tipo") == "completa") {
+      cantQR = 26;
+    }
+
+    tipoRuta = editor.getString("Tipo");
+  }
+
   Column scan_info(int posiQRtxt) {
     return Column(children: [
-      widgetComun(
-          codigos[posiQRtxt]['nombreEs'], codigos[posiQRtxt]['nombreEn']),
+      widgetComun(codigos[posiQRtxt - 1]['nombreEs'],
+          codigos[posiQRtxt - 1]['nombreEn']),
       //widgetRuta(codigos, posiQR),
-      widgetDireccion(codigos[posiQRtxt]['direccion'] ?? [], queryData),
+      widgetDireccion(codigos[posiQRtxt - 1]['direccion'] ?? [], queryData),
       GestureDetector(
           child: Container(
               width: queryData.size.width / 2.5,
@@ -161,42 +224,45 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
             _scannerQR();
           }),
       widgetComun(globals.textoQR_es, globals.textoQR_en),
-      botonInfo(codigos, posiQRtxt - 1, mostrarInfo),
+      botonInfo(codigos, posiQRtxt - 1),
       posicionQR(posiQR, cantQR),
-      GestureDetector(
-          child: Container(
-            width: queryData.size.width / 2.5,
-            height: 50,
-            decoration: BoxDecoration(
-                color: Colors.greenAccent,
-                borderRadius: BorderRadius.circular(20)),
-            child: Center(child: Text("Reiniciar")),
-          ),
-          onTap: () {
-            reiniciarShared();
-          }),
+
+      Visibility(
+          visible: finRuta,
+          child: widgetComun(globals.felicidadesEs, globals.felicidadesEn)),
+      Visibility(
+        visible: finRuta,
+        child: GestureDetector(
+            child: Container(
+              width: queryData.size.width / 2.5,
+              height: 50,
+              decoration: BoxDecoration(
+                  color: Colors.greenAccent,
+                  borderRadius: BorderRadius.circular(20)),
+              child: Center(child: widgetComun(globals.finalizarEs, globals.finalizarEn)),
+            ),
+            onTap: () {
+              reiniciarShared();
+            }),
+      ),
+      Row(
+        children: [
+          GestureDetector(
+              child: Container(
+                width: queryData.size.width / 2.5,
+                height: 50,
+                decoration: BoxDecoration(
+                    color: Colors.greenAccent,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Center(child: widgetComun(globals.reiniciarRuta_es, globals.reiniciarRuta_en)),
+              ),
+              onTap: () {
+                reiniciarShared();
+              }),
+          botonSiguiente(codigos, posiQRtxt - 1, queryData)
+        ],
+      )
     ]);
-  }
-
-  void obtenerPreferencias() async {
-    SharedPreferences editor = await SharedPreferences.getInstance();
-
-    i = editor.getString("NumeroQR") ?? "No hay dato";
-    print(editor.getString("NumeroQR"));
-    posiQR = int.parse(i);
-    if (posiQR > 0){
-      mostrarInfo = true;
-    }
-
-    if (editor.getString("Tipo") == "libre") {
-      cantQR = 11;
-      posiQRtxt = int.parse(i) + 14;
-    } else if (editor.getString("Tipo") == "completa") {
-      cantQR = 26;
-      posiQRtxt = int.parse(i);
-    }
-
-    tipoRuta = editor.getString("Tipo");
   }
 
   void reiniciarShared() async {
@@ -208,6 +274,135 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
     Global.tipo = "No hay dato";
   }
 
+  void mostrarDialog() {
+    showDialog(
+      context: _contextShowAlert,
+      barrierDismissible: false,
+      //StatefulBuilder para poder actualizar el dialog
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: widgetComun(codigos[codigoEscaneado - 1]['nombreEs'],
+                codigos[codigoEscaneado - 1]['nombreEn']),
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              height: 250,
+              child: Column(children: [
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 200,
+                  child: SingleChildScrollView(
+                    child: widgetComun(codigos[codigoEscaneado - 1]['textoEs'],
+                        codigos[codigoEscaneado - 1]['textoEn']),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              width: 3,
+                              color: Colors.black,
+                            ),
+                          ),
+                          child: Center(
+                            child: Icon(
+                                !boolPlaying ? Icons.play_arrow : Icons.pause),
+                            //child: widgetIcono (boolPlaying)
+                          ),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            if (boolPlaying == false) {
+                              boolPlaying = true;
+                              poderParar = true;
+
+                              if (Global.idioma == "es") {
+                                audioCache.play(
+                                    codigos[codigoEscaneado - 1]['audioEs'] + ".mp3");
+                              } else if (Global.idioma == "en") {
+                                audioCache.play(
+                                    codigos[codigoEscaneado - 1]['audioEn'] + ".mp3");
+                              }
+                            } else {
+                              boolPlaying = false;
+
+                              advancedPlayer.pause();
+                            }
+                          });
+                          //mostrarDialog();
+                        }),
+                    GestureDetector(
+                        child: Visibility(
+                          visible: poderParar,
+                          child: Container(
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                width: 2,
+                                color: Colors.black,
+                              ),
+                            ),
+                            child: Center(
+                              child: Icon(Icons.stop),
+                              //child: widgetIcono (boolPlay)
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            boolPlaying = false;
+                            poderParar = false;
+                          });
+
+                          advancedPlayer.resume();
+                          advancedPlayer.stop();
+                          //mostrarDialog();
+                        }),
+                    GestureDetector(
+                        child: Container(
+                          height: 40,
+                          child: Center(
+                            child: widgetComun(globals.cerrar, globals.close),
+                            //child: widgetIcono (boolPlaying)
+                          ),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            Navigator.of(context).pop();
+                            boolPlaying = false;
+                            poderParar = false;
+                          });
+
+                          advancedPlayer.resume();
+                          advancedPlayer.stop();
+                          //mostrarDialog();
+                        }),
+                  ],
+                ),
+              ]),
+            ),
+            actions: <Widget>[
+              /*FlatButton(
+              child: widgetComun(globals.cerrar, globals.close),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )*/
+            ],
+          );
+        },
+      ),
+    ).then((result) => print(result));
+  }
+
 /*void getList() async {
     codigos = json.decode(snapshot.data.toString());
     print(codigos[1]['nombreEs']);
@@ -217,105 +412,116 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
     String data = await DefaultAssetBundle.of(context).loadString("assets/qrs.json");
     //final jsonResult = json.decode(data);
   }*/
-}
 
-Widget widgetComun(String es, String en) {
-  print(Global.tipo);
-  if (Global.idioma == "es") {
-    return Text(es);
-  } else if (Global.idioma == "en") {
-    return Text(en);
+  Widget widgetComun(String es, String en) {
+    print(Global.tipo);
+    if (Global.idioma == "es") {
+      return Text(es);
+    } else if (Global.idioma == "en") {
+      return Text(en);
+    }
   }
-}
 
-Widget widgetRuta(List codigos, int posiQR) {
-  if (Global.tipo == "completa") {
-    return widgetComun(
-        codigos[posiQR]['nombreEs'], codigos[posiQR]['nombreEn']);
-  } else if (Global.tipo == "libre") {
-    return widgetComun(
-        codigos[posiQR + 15]['nombreEs'], codigos[posiQR + 15]['nombreEn']);
+  Widget widgetRuta(List codigos, int posiQR) {
+    if (Global.tipo == "completa") {
+      return widgetComun(
+          codigos[posiQR]['nombreEs'], codigos[posiQR]['nombreEn']);
+    } else if (Global.tipo == "libre") {
+      return widgetComun(
+          codigos[posiQR + 15]['nombreEs'], codigos[posiQR + 15]['nombreEn']);
+    }
   }
-}
 
-Widget widgetDireccion(String direccion, MediaQueryData queryData) {
-  if (direccion == "nulo") {
-    //imagen invisible
-    return GestureDetector(
-        child: Visibility(
-          visible: false,
-          child: Container(
-              width: queryData.size.width / 10,
-              child: Image.asset("images/marcador.png")),
-        ),
-        onTap: () {});
-  } else {
-    //imagen visible
-    return GestureDetector(
-        child: Visibility(
-          visible: true,
-          child: Container(
-              width: queryData.size.width / 10,
-              child: Image.asset("images/marcador.png")),
-        ),
-        onTap: () {});
+  Widget widgetDireccion(String direccion, MediaQueryData queryData) {
+    if (direccion == "nulo") {
+      //imagen invisible
+      return GestureDetector(
+          child: Visibility(
+            visible: false,
+            child: Container(
+                width: queryData.size.width / 10,
+                child: Image.asset("images/marcador.png")),
+          ),
+          onTap: () {});
+    } else {
+      //imagen visible
+      return GestureDetector(
+          child: Visibility(
+            visible: true,
+            child: Container(
+                width: queryData.size.width / 10,
+                child: Image.asset("images/marcador.png")),
+          ),
+          onTap: () {});
+    }
   }
-}
 
-Widget posicionQR(int posiQR, int cantQR) {
-  return Text("" + posiQR.toString() + " / " + cantQR.toString() + "");
-}
+  Widget posicionQR(int posiQR, int cantQR) {
+    return Text("" + posiQR.toString() + " / " + cantQR.toString() + "");
+  }
 
-Widget botonInfo(List codigos, int posiQRtxt, bool mostrarInfo) {
-  return Visibility(
-    visible: mostrarInfo,
-    child: GestureDetector(
-        child: FractionallySizedBox(
-          widthFactor: 0.6,
+  Widget botonInfo(List codigos, int posiQRtxt) {
+    return Visibility(
+      visible: mostrarInfo,
+      child: GestureDetector(
+          child: FractionallySizedBox(
+            widthFactor: 0.6,
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                  color: Colors.greenAccent,
+                  borderRadius: BorderRadius.circular(20)),
+              child: Center(
+                child:
+                    widgetComun(globals.mostrarInfoEs, globals.mostrarInfoEn),
+              ),
+            ),
+          ),
+          onTap: () {
+            mostrarDialog();
+          }),
+    );
+  }
+
+  Widget botonSiguiente(List codigos, int posiQRtxt, MediaQueryData queryData) {
+    return Visibility(
+      visible: mostrarSiguiente,
+      child: GestureDetector(
           child: Container(
-            height: 40,
+            width: queryData.size.width / 2.5,
+            height: 50,
             decoration: BoxDecoration(
                 color: Colors.greenAccent,
                 borderRadius: BorderRadius.circular(20)),
-            child: Center(
-              child: widgetComun(globals.mostrarInfoEs, globals.mostrarInfoEn),
-            ),
+            child: Center(child: Text("Siguiente")),
           ),
-        ),
-        onTap: () {
-          showDialog(
-            context: _contextShowAlert,
-            barrierDismissible: false,
-            builder: (context) => AlertDialog(
-              title: widgetComun(codigos[posiQRtxt]['nombreEs'],
-                  codigos[posiQRtxt]['nombreEn']),
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: 250,
-                child: Column(children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 200,
-                    child: SingleChildScrollView(
-                      child: widgetComun(codigos[posiQRtxt]['textoEs'],
-                          codigos[posiQRtxt]['textoEn']),
-                    ),
-                  ),
-                  Row(
+          onTap: () async {
+            SharedPreferences editor = await SharedPreferences.getInstance();
 
-                  ),
-                ]),
-              ),
-              actions: <Widget>[
-                FlatButton(
-                  child: widgetComun(globals.cerrar, globals.close),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            ),
-          ).then((result) => print(result));
-        }),
-  );
+            setState(() {
+              mostrarSiguiente = false;
+              mostrarInfo = false;
+              if (tipoRuta == "libre") {
+                posiQR += 1;
+                i = posiQR.toString();
+                editor.setString("NumeroQR", i);
+                print(editor.getString("NumeroQR"));
+              } else if (tipoRuta == "completa") {
+                posiQR += 1;
+                i = posiQR.toString();
+                editor.setString("NumeroQR", i);
+                print(editor.getString("NumeroQR"));
+              }
+            });
+          }),
+    );
+  }
+
+  Widget widgetIcono(bool boolPlay) {
+    if (boolPlay == true) {
+      return Icon(Icons.play_arrow);
+    } else {
+      return Icon(Icons.pause);
+    }
+  }
 }
