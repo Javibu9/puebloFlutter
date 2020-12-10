@@ -16,6 +16,8 @@ import 'Model/Codigo.dart';
 import 'Util/Global.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:toast/toast.dart';
+
+import 'Util/PopUp.dart';
 //import 'package:media_player/media_player.dart';
 
 class Inicio_ruta extends StatefulWidget {
@@ -91,8 +93,6 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
         });
       }
     }
-
-
   }
 
   @override
@@ -144,16 +144,37 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
 
     //_jsonQR(context);
 
-    return WillPopScope(
+    //evita el poder darle atras
+    /*return WillPopScope(
       onWillPop: () async {
         return false;
-      },
-      child: Scaffold(
+      },*/
+      return Scaffold(
           appBar: AppBar(
             //quita el boton de atras
-            automaticallyImplyLeading: false,
-            title: Text("El Oso"),
-          ),
+            //  automaticallyImplyLeading: false,
+              title: Text("El Oso"),
+              actions: <Widget>[
+                PopupMenuButton<String>(
+                    onSelected: popUpAccion,
+                    /*
+              (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: "Contact",
+                child: widgetAlertDialog(globals.contacto, globals.contact),
+              ),
+            ],
+             */
+
+                    itemBuilder: (BuildContext context) {
+                      return PopUp.opciones.map((String choice) {
+                        return PopupMenuItem<String>(
+                          value: widgetString(globals.contacto, globals.contact),
+                          child: widgetComun(globals.contacto, globals.contact),
+                        );
+                      }).toList();
+                    })
+              ]),
           body: Container(
             child: Center(
               child: FutureBuilder(
@@ -186,8 +207,7 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
                 },
               ),
             ),
-          )),
-    );
+          ));
   }
 
   void obtenerPreferencias() async {
@@ -422,6 +442,14 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
     }
   }
 
+  String widgetString(String es, String en) {
+    if (Global.idioma == "es") {
+      return es;
+    } else if (Global.idioma == "en") {
+      return en;
+    }
+  }
+
   Widget widgetRuta(List codigos, int posiQR) {
     if (Global.tipo == "completa") {
       return widgetComun(
@@ -522,6 +550,84 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
       return Icon(Icons.play_arrow);
     } else {
       return Icon(Icons.pause);
+    }
+  }
+
+
+  void popUpAccion(String choice) {
+    if (Global.idioma == "es") {
+      PopUp.contacto = "Contacto";
+      popUp(choice);
+    } else if (Global.idioma == "en") {
+      PopUp.contacto = "Contact";
+      popUp(choice);
+    }
+  }
+
+  void popUp(String choice) {
+    print(choice);
+    print(PopUp.contacto);
+    if (choice == PopUp.contacto) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          backgroundColor: Colors.red,
+          title: widgetComun(globals.contacto, globals.contact),
+          content: Container(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Row(
+                  children: [
+                    Icon(Icons.email),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: Text(globals.email),
+                    )
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.phone),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Text(globals.telefono),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.location_on),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Text(globals.ubicacion),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: widgetComun(globals.cerrar, globals.close),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        ),
+      ).then((result) {
+        print(result);
+      });
     }
   }
 }
