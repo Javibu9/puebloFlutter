@@ -10,6 +10,9 @@ import 'package:proyecto_pueblo/inicio_ruta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:audioplayers/audio_cache.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'mapa.dart';
 
 
 
@@ -146,7 +149,11 @@ class _IntroPageState extends State<IntroPage> {
                       height: 50,
                       child: Image.asset("images/marcador.png"),
                     ),
-                    onTap: () {}),
+                    onTap: () {
+                      pedirPermisoLocalizacion();
+                      //getPermissionsStatus();
+                      //requestPermissions();
+                    }),
                 GestureDetector(
                     child: Container(
                       width: queryData.size.width / 2.5,
@@ -172,6 +179,14 @@ class _IntroPageState extends State<IntroPage> {
         ),
       ),
     );
+  }
+
+  void abrirMapa(BuildContext context) {
+    Global.todosMarcadores = true;
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => Mapa()));
   }
 
 
@@ -470,6 +485,43 @@ class _IntroPageState extends State<IntroPage> {
       ).then((result) {
         print(result);
       });
+    }
+  }
+
+  /*getPermissionsStatus() async {
+    List<PermissionName> permissionNames = [];
+    if (a1) permissionNames.add(PermissionName.Location);
+    message = '';
+    List<Permissions> permissions = await Permission.getPermissionsStatus(permissionNames);
+    permissions.forEach((permission) {
+      message += '${permission.permissionName}: ${permission.permissionStatus}\n';
+    });
+    setState(() {
+      message;
+    });
+  }
+
+  requestPermissions() async {
+    List<PermissionName> permissionNames = [];
+    if (a1) permissionNames.add(PermissionName.Location);
+
+    message = '';
+    var permissions = await Permission.requestPermissions(permissionNames);
+    permissions.forEach((permission) {
+      message += '${permission.permissionName}: ${permission.permissionStatus}\n';
+    });
+    setState(() {});
+  }*/
+
+  pedirPermisoLocalizacion() async{
+    var localizacionStatus = await Permission.location.status;
+
+
+    if (!localizacionStatus.isGranted){
+      await Permission.location.request();
+    }
+    if (await Permission.location.isGranted){
+      abrirMapa(context);
     }
   }
 

@@ -106,11 +106,11 @@ class _Consultar_infoState extends State<Consultar_info> {
 
                               if (Global.idioma == "es") {
                                 audioCache.play(codigos[codigoEscaneado - 1]
-                                        ['audioEs'] +
+                                ['audioEs'] +
                                     ".mp3");
                               } else if (Global.idioma == "en") {
                                 audioCache.play(codigos[codigoEscaneado - 1]
-                                        ['audioEn'] +
+                                ['audioEn'] +
                                     ".mp3");
                               }
                             } else {

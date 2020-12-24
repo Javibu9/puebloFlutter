@@ -8,6 +8,7 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:proyecto_pueblo/Util/global/globals.dart' as globals;
 import 'package:proyecto_pueblo/Util/Global.dart';
 import 'package:proyecto_pueblo/intro_page.dart';
@@ -18,6 +19,7 @@ import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:toast/toast.dart';
 
 import 'Util/PopUp.dart';
+import 'mapa.dart';
 //import 'package:media_player/media_player.dart';
 
 class Inicio_ruta extends StatefulWidget {
@@ -111,15 +113,14 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
       });
     });
     advancedPlayer.durationHandler = (p) => setState(() {
-          _duration = p;
-        });
+      _duration = p;
+    });
   }
 
   /*Future<String> loadAsset() async {
     String jsonString = await rootBundle.loadString('assets/qrs.json');
     final jsonReponse = json.decode(jsonString);
     Codigo codigo = new Codigo.fromJson(jsonReponse);
-
   }*/
 
   @override
@@ -149,15 +150,15 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
       onWillPop: () async {
         return false;
       },*/
-      return Scaffold(
-          appBar: AppBar(
-            //quita el boton de atras
-            //  automaticallyImplyLeading: false,
-              title: Text("El Oso"),
-              actions: <Widget>[
-                PopupMenuButton<String>(
-                    onSelected: popUpAccion,
-                    /*
+    return Scaffold(
+        appBar: AppBar(
+          //quita el boton de atras
+          //  automaticallyImplyLeading: false,
+            title: Text("El Oso"),
+            actions: <Widget>[
+              PopupMenuButton<String>(
+                  onSelected: popUpAccion,
+                  /*
               (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
                 value: "Contact",
@@ -166,48 +167,48 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
             ],
              */
 
-                    itemBuilder: (BuildContext context) {
-                      return PopUp.opciones.map((String choice) {
-                        return PopupMenuItem<String>(
-                          value: widgetString(globals.contacto, globals.contact),
-                          child: widgetComun(globals.contacto, globals.contact),
-                        );
-                      }).toList();
-                    })
-              ]),
-          body: Container(
-            child: Center(
-              child: FutureBuilder(
-                future: DefaultAssetBundle.of(context)
-                    .loadString('assets/qrs.json'),
-                // ignore: missing_return
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    codigos = json.decode(snapshot.data.toString());
-                    if (Global.tipo == "comleta") {
-                      return scan_info(posiQR);
-                    } else if (Global.tipo == "libre") {
-                      return scan_info(posiQR + 15);
-                    } else {
-                      if (tipoRuta == "completa") {
-                        return scan_info(posiQR);
-                      } else if (tipoRuta == "libre") {
-                        return scan_info(posiQR + 15);
-                        print("El tipo ruta es " + tipoRuta);
-                      } else {}
-                    }
-                  } else if (snapshot.hasError) {
-                    return Text("errror");
+                  itemBuilder: (BuildContext context) {
+                    return PopUp.opciones.map((String choice) {
+                      return PopupMenuItem<String>(
+                        value: widgetString(globals.contacto, globals.contact),
+                        child: widgetComun(globals.contacto, globals.contact),
+                      );
+                    }).toList();
+                  })
+            ]),
+        body: Container(
+          child: Center(
+            child: FutureBuilder(
+              future: DefaultAssetBundle.of(context)
+                  .loadString('assets/qrs.json'),
+              // ignore: missing_return
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  codigos = json.decode(snapshot.data.toString());
+                  if (Global.tipo == "comleta") {
+                    return scan_info(posiQR);
+                  } else if (Global.tipo == "libre") {
+                    return scan_info(posiQR + 15);
                   } else {
-                    //animacion por que tarda en leer el json
-                    return CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                    );
+                    if (tipoRuta == "completa") {
+                      return scan_info(posiQR);
+                    } else if (tipoRuta == "libre") {
+                      return scan_info(posiQR + 15);
+                      print("El tipo ruta es " + tipoRuta);
+                    } else {}
                   }
-                },
-              ),
+                } else if (snapshot.hasError) {
+                  return Text("errror");
+                } else {
+                  //animacion por que tarda en leer el json
+                  return CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                  );
+                }
+              },
             ),
-          ));
+          ),
+        ));
   }
 
   void obtenerPreferencias() async {
@@ -228,6 +229,7 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
     }
 
     tipoRuta = editor.getString("Tipo");
+    Global.tipo = tipoRuta;
   }
 
   Column scan_info(int posiQRtxt) {
@@ -427,7 +429,6 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
     codigos = json.decode(snapshot.data.toString());
     print(codigos[1]['nombreEs']);
   }
-
   Future <void> _jsonQR(BuildContext context) async {
     String data = await DefaultAssetBundle.of(context).loadString("assets/qrs.json");
     //final jsonResult = json.decode(data);
@@ -480,7 +481,9 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
                 width: queryData.size.width / 10,
                 child: Image.asset("images/marcador.png")),
           ),
-          onTap: () {});
+          onTap: () {
+            pedirPermisoLocalizacion();
+          });
     }
   }
 
@@ -501,7 +504,7 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
                   borderRadius: BorderRadius.circular(20)),
               child: Center(
                 child:
-                    widgetComun(globals.mostrarInfoEs, globals.mostrarInfoEn),
+                widgetComun(globals.mostrarInfoEs, globals.mostrarInfoEn),
               ),
             ),
           ),
@@ -629,5 +632,30 @@ class _Inicio_rutaState extends State<Inicio_ruta> {
         print(result);
       });
     }
+  }
+
+  pedirPermisoLocalizacion() async{
+    var localizacionStatus = await Permission.location.status;
+
+    if (!localizacionStatus.isGranted){
+      await Permission.location.request();
+    }
+    if (await Permission.location.isGranted){
+      abrirMapa(context);
+    }
+  }
+  void abrirMapa(BuildContext context) {
+    Global.todosMarcadores = false;
+    print(codigos[posiQR-1]['direccion']);
+    if (Global.tipo == "completa") {
+      Global.posicionMapa = posiQR-1;
+    } else if (Global.tipo == "libre") {
+      Global.posicionMapa = posiQR+14;
+    }
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => Mapa()));
   }
 }
